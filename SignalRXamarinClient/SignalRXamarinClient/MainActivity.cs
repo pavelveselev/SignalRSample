@@ -7,6 +7,7 @@ using Android.Support.V7.App;
 using Android.Util;
 using Android.Views;
 using Android.Widget;
+using Microsoft.AspNetCore.Http.Connections;
 using Microsoft.AspNetCore.SignalR.Client;
 
 namespace SignalRXamarinClient
@@ -14,6 +15,7 @@ namespace SignalRXamarinClient
     [Activity(Label = "@string/app_name", Theme = "@style/AppTheme.NoActionBar", MainLauncher = true)]
     public class MainActivity : AppCompatActivity
     {
+        private HubConnection _connection;
         private IDisposable _subscription;
 
         protected override void OnCreate(Bundle savedInstanceState)
@@ -28,14 +30,15 @@ namespace SignalRXamarinClient
             FloatingActionButton fab = FindViewById<FloatingActionButton>(Resource.Id.fab);
             fab.Click += FabOnClick;
 
-            var connection = new HubConnectionBuilder().WithUrl("https://signalrserver20190507124505.azurewebsites.net/test").Build();
-            _subscription = connection.On<string>("SendTest", x => Log.Info("SIGNALR!! Message", x));
-            connection.StartAsync();
+            _connection = new HubConnectionBuilder().WithUrl("https://signalrserver20190507124505.azurewebsites.net/test", HttpTransportType.WebSockets).Build();
+            _subscription = _connection.On<string>("SendTest", x => Log.Info("SIGNALR!! Message", x));
+            _connection.StartAsync();
         }
 
         protected override void OnDestroy()
         {
             _subscription?.Dispose();
+            _connection?.StopAsync();
             base.OnDestroy();
         }
 
