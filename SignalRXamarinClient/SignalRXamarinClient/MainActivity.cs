@@ -28,7 +28,7 @@ namespace SignalRXamarinClient
             FloatingActionButton fab = FindViewById<FloatingActionButton>(Resource.Id.fab);
             fab.Click += FabOnClick;
 
-            var connection = new HubConnectionBuilder().WithUrl("https://lk.sksbank.ru/m/prices/v1").Build();
+            var connection = new HubConnectionBuilder().WithUrl("https://signalrserver20190507124505.azurewebsites.net/test").Build();
             _subscription = connection.On<string>("SendTest", x => Log.Info("SIGNALR!! Message", x));
             connection.StartAsync();
         }
